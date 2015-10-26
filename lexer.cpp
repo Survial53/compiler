@@ -3,12 +3,28 @@
 
 #include "lexer.h"
 
+	const string tokens[MAS_SZ] = {"begin", "end", "for", "to", "downto", "do", "if", "then", "else", "div", "mod", "and", "or", "not", "int", "float", "string",
+	":=", "=", "<>", "<", ">", "<=",
+	"+", "-", "*", "/",
+	" ", ";", "(", ")", ".", "\n"
+};
+
+const string TOKEN_CLASS_NAME[9] = {"ttResWord", 
+									"ttID", 
+									"ttLogOpr",
+									"ttArifOpr",
+									"ttConst", 
+									"ttString", 
+									"ttDevider", 
+									"ttAS_OP", 
+									"ttUnknown"
+};
 //metods of CToken
-CToken::CToken(void): _ID(LEX_UNK) {};
+CToken::CToken(void): id(LEX_UNK) {};
 
-CToken::CToken(const CToken &other): _ID(other._ID), _Text(other._Text) {};
+CToken::CToken(const CToken &other): id(other.id), text(other.text) {};
 
-CToken::CToken(TOKENS type, const string &text): _ID(type), _Text(text) {};
+CToken::CToken(TOKENS type, const string &text): id(type), text(text) {};
 
 //metods of CLexer
 void CLexer::PushABC (int l_class, string str) {
@@ -232,8 +248,8 @@ void CLexer::SaveTokens(ostream & os) {
 	if (os.bad()) {
 		cout<<"CLexer::SaveTokens error"<<endl;
 	}
-	for (auto it = _TokensBuffer.begin(); it != _TokensBuffer.end(); ++it) {
-		os<<"ID: "<<left<<setw(4)<<(*it).ID()<<" Lex_Class: "<<left<<setw(10)<<TOKEN_CLASS_NAME[(*it).ID()/1000]<<" Lexeme: "<<left<<(*it).Text()<<endl;
+	for (auto it = tokensBuffer.begin(); it != tokensBuffer.end(); ++it) {
+		os<<"ID: "<<left<<setw(4)<<(*it).Id()<<" Lex_Class: "<<left<<setw(10)<<TOKEN_CLASS_NAME[(*it).Id()/1000]<<" Lexeme: "<<left<<(*it).Text()<<endl;
 	}
 }
 
@@ -260,10 +276,10 @@ bool CLexer::Lex (ifstream &f)
 	while((ch = f.peek()) != EOF) 
 	{
 		CToken token  = SkanToken(f);
-		if (token.ID() == LEX_UNK) {
-			_UnknownLex.push_back(token);
-		}else if ((token.ID() != SPACE) && ((token.ID()) != EOL)) {
-			_TokensBuffer.push_back(token);
+		if (token.Id() == LEX_UNK) {
+			unknownLex.push_back(token);
+		}else if ((token.Id() != SPACE) && ((token.Id()) != EOL)) {
+			tokensBuffer.push_back(token);
 		}
 	}
 	return true;

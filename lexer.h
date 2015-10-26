@@ -11,23 +11,6 @@ using namespace std;
 #define MAS_SZ 33
 #define HAND_SZ 8
 
-const string tokens[MAS_SZ] = {"begin", "end", "for", "to", "downto", "do", "if", "then", "else", "div", "mod", "and", "or", "not", "int", "float", "string",
-	":=", "=", "<>", "<", ">", "<=",
-	"+", "-", "*", "/",
-	" ", ";", "(", ")", ".", "\n"
-};
-
-const string TOKEN_CLASS_NAME[9] = {"ttResWord", 
-									"ttID", 
-									"ttLogOpr",
-									"ttArifOpr",
-									"ttConst", 
-									"ttString", 
-									"ttDevider", 
-									"ttAS_OP", 
-									"ttUnknown"
-};
-
 enum E_TOKEN_CLASS {
 	ttResWord = 0,
 	ttID      = 1,
@@ -98,11 +81,11 @@ typedef unordered_map<string, int> RW;
 class CToken {
 	friend class CLexer;
 private:
-	TOKENS _ID;
-	string _Text;
+	TOKENS id;
+	string text;
 public:
-	TOKENS ID(void) const {return _ID;}
-	string Text(void) const {return _Text;}
+	TOKENS Id(void) const {return id;}
+	string Text(void) const {return text;}
 
 	CToken (void);
 	CToken (const CToken &);
@@ -111,8 +94,8 @@ public:
 
 class CLexer {
 private:
-	TokensArray _TokensBuffer;
-	TokensArray _UnknownLex;
+	TokensArray tokensBuffer;
+	TokensArray unknownLex;
 	int alp[ALP];
 	RW ResWord;
 	typedef CToken (CLexer::*ptrFun)(ifstream &);
@@ -144,7 +127,7 @@ private:
 
 public:
 
-	const TokensArray& GetTokens(void) const {return _TokensBuffer;}
+	const TokensArray& GetTokens(void) const {return tokensBuffer;}
 
 	void SaveTokens(ostream &os);
 
