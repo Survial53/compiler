@@ -4,7 +4,7 @@
 #include "lexer.h"
 
 	const string tokens[MAS_SZ] = {"begin", "end", "for", "to", "downto", "do", "if", "then", "else", "div", "mod", "and", "or", "not", "int", "float", "string",
-	":=", "=", "<>", "<", ">", "<=",
+	"=", "<>", "<", ">", "<=",
 	"+", "-", "*", "/",
 	" ", ";", "(", ")", ".", "\n"
 };
@@ -97,10 +97,10 @@ CToken CLexer::Skan_ID(ifstream &f)
 CToken CLexer::SkanString(ifstream &f)
 {
 	static int table[3][4] = {
-	  /* "   \  any   eof*/
-		{1, 4, 4, 3 }, /* enter_st */
-		{3, 2, 1, 3}, /*  st_"     */
-		{1, 1, 1, 3}, /*  st_\     */
+	  /* "  \ any eof*/
+		{1, 4, 4, 4}, /* def_st */
+		{3, 2, 1, 4}, /*  st_"     */
+		{1, 1, 1, 4}, /*  st_\     */
 	};
 	char ch = f.peek();
 	TOKENS tokType = LEX_STR;
@@ -135,16 +135,16 @@ CToken CLexer::SkanString(ifstream &f)
 
 CToken CLexer::Skan_Int_or_Float(ifstream &f)
 {
-	static int table[8][6] = {
+	static int table[8][5] = {
 	 /*num  .  e   +- any eof */
-		{1, 3, 9, 9,  9,   8}, /* 0 st_start */
-		{1, 2, 5, 8,  8,   8}, /* 1 st_num */
-		{2, 9, 5, 9,  8,   8}, /* 2 st_num. */
-		{4, 9, 9, 9,  9,   9}, /* 3 st_. */
-		{4, 8, 5, 8,  8,   8}, /* 4 st_.num */
-		{7, 9, 9, 6,  9,   9}, /* 5 st_e */
-		{6, 9, 9, 9,  9,   9}, /* 6 st_e+- */
-		{7, 8, 8, 8,  8,   8}, /* 7 st_e_num */
+		{1, 9, 9, 9,  9}, /* 0 st_start */
+		{1, 2, 8, 8,  8}, /* 1 st_num */
+		{4, 8, 5, 8,  8}, /* 2 st_num. */
+		{4, 9, 9, 9,  9}, /* 3 st_. */
+		{4, 8, 5, 8,  8}, /* 4 st_.num */
+		{7, 9, 9, 6,  9}, /* 5 st_e */
+		{7, 9, 9, 9,  9}, /* 6 st_e+- */
+		{7, 8, 8, 8,  8}, /* 7 st_e_num */
 	};
 
 	TOKENS tokType = LEX_INT;
@@ -162,7 +162,7 @@ CToken CLexer::Skan_Int_or_Float(ifstream &f)
 			st = table[st][1];
 		} else if (ch == 'e' || ch == 'E') {
 			st = table[st][2];
-		} else if (ch == '-' || ch == '-') {
+		} else if (ch == '+' || ch == '-') {
 			st = table[st][3];
 		} else {
 			st = table[st][4];

@@ -8,7 +8,7 @@ using namespace std;
 
 #define RES_W 17
 #define ALP 256
-#define MAS_SZ 33
+#define MAS_SZ 32
 #define HAND_SZ 8
 
 enum E_TOKEN_CLASS {
