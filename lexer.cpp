@@ -3,11 +3,7 @@
 
 #include "lexer.h"
 
-	const string tokens[MAS_SZ] = {"begin", "end", "for", "to", "downto", "do", "if", "then", "else", "div", "mod", "and", "or", "not", "int", "float", "string",
-	"=", "<>", "<", ">", "<=",
-	"+", "-", "*", "/",
-	" ", ";", "(", ")", ".", "\n"
-};
+const string tokens[RES_W] = {"Begin", "End", "For", "To", "Downto", "Do", "If", "Then", "Else", "Div", "Mod", "And", "Or", "Not", "Int", "Float", "String"};
 
 const string TOKEN_CLASS_NAME[9] = {"ttResWord", 
 									"ttID", 
@@ -19,6 +15,7 @@ const string TOKEN_CLASS_NAME[9] = {"ttResWord",
 									"ttAS_OP", 
 									"ttUnknown"
 };
+
 //metods of CToken
 CToken::CToken(void): id(LEX_UNK) {};
 
@@ -51,6 +48,21 @@ void CLexer::Init() {
 		{
 			ResWord.insert(pair<string, int>(tokens[i], i));
 		}
+
+		LexPrint.insert(pair<TOKENS, string>(EQ,     "="));
+		LexPrint.insert(pair<TOKENS, string>(NEQ,   "<>"));
+		LexPrint.insert(pair<TOKENS, string>(LST,    "<"));
+		LexPrint.insert(pair<TOKENS, string>(MRT,    ">"));
+		LexPrint.insert(pair<TOKENS, string>(LSOEQ, "<="));
+		LexPrint.insert(pair<TOKENS, string>(ADD,    "+"));
+		LexPrint.insert(pair<TOKENS, string>(MUL,    "*"));
+		LexPrint.insert(pair<TOKENS, string>(SUB,    "-"));
+		LexPrint.insert(pair<TOKENS, string>(DEL,    "/"));
+		LexPrint.insert(pair<TOKENS, string>(SCOLON, ";"));
+		LexPrint.insert(pair<TOKENS, string>(LBRACK, "("));
+		LexPrint.insert(pair<TOKENS, string>(RBRACK, ")"));
+		LexPrint.insert(pair<TOKENS, string>(PNT,    "."));
+		LexPrint.insert(pair<TOKENS, string>(LEX_ASSIG, ":="));
 	}
 
 int CLexer::DefineTokenClass(ifstream &f) const
@@ -188,7 +200,7 @@ CToken CLexer::Skan_Devider(ifstream &f)
 	string lexeme;
 	TOKENS tokType = get_LexID(ch);
 	lexeme += ch;
-	return CToken(tokType, lexeme);
+	return CToken(tokType, "");
 }
 
 CToken CLexer::Skan_A_OP(ifstream &f)
@@ -197,7 +209,7 @@ CToken CLexer::Skan_A_OP(ifstream &f)
 	string lexeme;
 	TOKENS tokType = get_LexID(ch);
 	lexeme += ch; 
-	return CToken(tokType, lexeme);
+	return CToken(tokType, "");
 }
 
 CToken CLexer::Skan_L_OP(ifstream &f)
@@ -219,7 +231,7 @@ CToken CLexer::Skan_L_OP(ifstream &f)
 			break;
 		}
 	}
-	return CToken(tokType, lexeme);
+	return CToken(tokType, "");
 }
 
 CToken CLexer::Skan_Assigment(ifstream &f)
@@ -232,24 +244,33 @@ CToken CLexer::Skan_Assigment(ifstream &f)
 		if (f.peek() == '=') {
 			lexeme += f.get();
 			tokType = LEX_ASSIG;
+		} else {
+			tokType = LEX_UNK;
 		}
 	}
-	return CToken(tokType, lexeme);
+	return CToken(tokType, "");
 }
 
 CToken CLexer::Skan_Unknown(ifstream &f)
 {
 	string lexeme;
 	lexeme += f.get();
-	return CToken(LEX_UNK, lexeme);
+	return CToken(LEX_UNK, "");
 }
 
-void CLexer::SaveTokens(ostream & os) {
+void CLexer::SaveTokens(ostream &os) {
 	if (os.bad()) {
 		cout<<"CLexer::SaveTokens error"<<endl;
 	}
+	string lexeme;
 	for (auto it = tokensBuffer.begin(); it != tokensBuffer.end(); ++it) {
-		os<<"ID: "<<left<<setw(4)<<(*it).Id()<<" Lex_Class: "<<left<<setw(10)<<TOKEN_CLASS_NAME[(*it).Id()/1000]<<" Lexeme: "<<left<<(*it).Text()<<endl;
+		RW1::iterator it1 = LexPrint.find((*it).Id());
+		if (((*it).Text()).compare("") == 0) {
+			lexeme = it1->second;
+		} else {
+			lexeme = (*it).Text();
+		}
+		os<<"ID: "<<left<<setw(4)<<(*it).Id()<<" Lex_Class: "<<left<<setw(10)<<TOKEN_CLASS_NAME[(*it).Id()/1000]<<" Lexeme: "<<left<<lexeme/*(*it).Text()*/<<endl;
 	}
 }
 

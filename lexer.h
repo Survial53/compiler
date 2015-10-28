@@ -8,7 +8,6 @@ using namespace std;
 
 #define RES_W 17
 #define ALP 256
-#define MAS_SZ 32
 #define HAND_SZ 8
 
 enum E_TOKEN_CLASS {
@@ -54,6 +53,7 @@ enum TOKENS {
 	MUL   = 3000 + '*',
 	ADD   = 3000 + '+',
 	SUB   = 3000 + '-',
+	DEL   = 3000 + '/',
 
 	LEX_INT   = 4001,
 	LEX_FLOAT = 4002,
@@ -62,7 +62,6 @@ enum TOKENS {
 
 	EOL     = 6000 + '\n',
 	SPACE   = 6000 + ' ',
-	COLON   = 6000 + ':',
 	SCOLON  = 6000 + ';',
 	COMMA   = 6000 + ',',
 	PNT     = 6000 + '.',
@@ -77,6 +76,7 @@ class CToken;
 class CLexer;
 typedef list<CToken> TokensArray;
 typedef unordered_map<string, int> RW;
+typedef unordered_map<TOKENS, string> RW1;
 
 class CToken {
 	friend class CLexer;
@@ -98,6 +98,7 @@ private:
 	TokensArray unknownLex;
 	int alp[ALP];
 	RW ResWord;
+	RW1 LexPrint;
 	typedef CToken (CLexer::*ptrFun)(ifstream &);
 	static ptrFun methods[HAND_SZ];
 
